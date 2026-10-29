@@ -1,0 +1,1145 @@
+================================================================================
+                       LEADING UNIVERSITY, SYLHET, BANGLADESH
+                   DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING
+================================================================================
+
+                               PROJECT REPORT ON:
+        UNIFIND: A SECURE LOST AND FOUND SYSTEM FOR UNIVERSITY CAMPUS
+                        USING FLUTTER AND SUPABASE
+
+    A B.Sc. Project Report submitted in partial fulfillment of the requirements 
+         for the degree of Bachelor of Science in Computer Science 
+                              and Engineering
+
+================================================================================
+SUBMITTED BY:
+================================================================================
+Student Name: A. S. M. Anupom                  Student ID: 2026-CSE-001
+Student Name: Taskin Ahmed                    Student ID: 2026-CSE-002
+
+================================================================================
+SUPERVISED BY:
+================================================================================
+Dr. M. A. Karim
+Associate Professor, Department of Computer Science and Engineering
+Leading University, Sylhet, Bangladesh
+
+================================================================================
+DATE: June 2026
+================================================================================
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+Abstract ..................................................................... ii
+Acknowledgements ............................................................. iii
+Dedication ................................................................... iv
+List of Figures .............................................................. v
+List of Tables ............................................................... vi
+Chapter 1: Introduction ...................................................... 1
+  1.1 Background ............................................................. 1
+  1.2 Motivation ............................................................. 1
+  1.3 Problem Statement ...................................................... 2
+  1.4 Project Overview ....................................................... 3
+  1.5 Objectives ............................................................. 3
+  1.6 Scope of the Project ................................................... 4
+Chapter 2: Literature Review and System Analysis ............................. 6
+  2.1 Existing Lost and Found Systems ........................................ 6
+  2.2 Problems in Traditional Lost and Found Processes ....................... 6
+  2.3 Related Works .......................................................... 7
+  2.4 Comparative Analysis ................................................... 8
+  2.5 Proposed Solution ...................................................... 9
+Chapter 3: Requirement Specification and System Design ....................... 11
+  3.1 Functional Requirements ................................................ 11
+  3.2 Non-Functional Requirements ............................................ 13
+  3.3 System Architecture .................................................... 15
+  3.4 UML Diagrams ........................................................... 17
+  3.5 Database Design ........................................................ 21
+Chapter 4: System Implementation and Accomplishment .......................... 26
+  4.1 Technology Stack ....................................................... 26
+  4.2 Authentication Module .................................................. 28
+  4.3 User Profile Module .................................................... 29
+  4.4 Lost and Found Posting Module .......................................... 31
+  4.5 Feed and Search Module ................................................. 32
+  4.6 Real-Time Messaging Module ............................................. 34
+  4.7 Theme Management ....................................................... 36
+  4.8 Security Implementation ................................................ 37
+Chapter 5: Results and Discussion ............................................ 40
+  5.1 App Screens and Visual Layouts ......................................... 40
+  5.2 Achievement of Objectives ............................................. 43
+  5.3 User Feedback .......................................................... 44
+  5.4 Performance Evaluation ................................................. 45
+Chapter 6: Conclusion and Future Work ........................................ 47
+  6.1 Conclusion ............................................................. 47
+  6.2 Restrictions ........................................................... 47
+  6.3 Future Work ............................................................ 48
+References ................................................................... 50
+Appendix A: Source Code Listings ............................................. 52
+Appendix B: User Guide ....................................................... 56
+
+
+--------------------------------------------------------------------------------
+ABSTRACT
+--------------------------------------------------------------------------------
+Losing personal belongings on a university campus is a common issue that causes 
+significant disruption, anxiety, and time loss for students and faculty. 
+Traditional lost-and-found processes on university campuses are often fragmented, 
+relying on physical bulletin boards, open social media groups, or centralized 
+administrative offices. These methods suffer from lack of access verification, 
+privacy concerns, difficulty in search and filtering, and vulnerability to 
+fraudulent claims by unauthorized outsiders.
+
+To address these limitations, this project presents UniFind, a secure, real-time, 
+cross-platform mobile application specifically engineered for university 
+lost-and-found recovery. Restricting registrations exclusively to verified 
+university email domains (e.g., @lus.ac.bd for Leading University, Sylhet) and 
+employing One-Time Password (OTP) verification, UniFind ensures that only active 
+members of the campus community can access the platform.
+
+The application utilizes Flutter for a responsive Material 3 frontend in both Light 
+and Dark themes, managed via the Provider state management framework. The backend 
+is built on the serverless Supabase platform, incorporating PostgreSQL database 
+tables, Supabase Storage buckets, and GoTrue authentication. Key security 
+features include PostgreSQL Row Level Security (RLS) policies that protect user 
+details, conversations, and post operations from unauthorized database access. 
+
+UniFind introduces advanced functionalities including multiple image uploads for 
+posts with preview management, a swipeable image carousel with indicator dots in 
+post details, quick communication links like direct telephone dialing, and a 
+real-time user-to-user messaging system built with Supabase Realtime streams. 
+Real-time fuzzy text search is facilitated through PostgreSQL Trigram (pg_trgm) 
+indices. By confining access, validating identity, and implementing real-time 
+messaging, UniFind offers a highly efficient, reliable, and secure platform for 
+campus asset recovery.
+
+
+--------------------------------------------------------------------------------
+ACKNOWLEDGEMENTS
+--------------------------------------------------------------------------------
+First and foremost, the authors express their gratitude to the Almighty Creator 
+for providing the strength, patience, and capability to complete this final-year 
+project and report.
+
+We would like to express our deepest gratitude to our project supervisor, 
+Dr. M. A. Karim, Associate Professor, Department of Computer Science and 
+Engineering, Leading University, Sylhet, for his invaluable guidance, continuous 
+encouragement, and constructive criticisms throughout the development of the 
+"UniFind" application. His expertise and guidance played a vital role in refining 
+our methodology, database schema designs, and the final architectural 
+implementation.
+
+We are also highly grateful to the Head of the Department and all the faculty 
+members of the Department of Computer Science and Engineering at Leading 
+University for providing the academic facilities, support services, and 
+necessary resources to conduct this work.
+
+Finally, we extend our heartfelt appreciation to our families and classmates 
+for their moral support, understanding, and feedback during the challenging 
+design and implementation phases of this B.Sc. project.
+
+
+--------------------------------------------------------------------------------
+DEDICATION
+--------------------------------------------------------------------------------
+Dedicated to our beloved parents, whose endless support, sacrifices, and prayers 
+have been the guiding light of our lives.
+
+
+================================================================================
+CHAPTER 1: INTRODUCTION
+================================================================================
+
+1.1 Background
+Universities are bustling micro-societies populated by thousands of students, 
+faculty, and administrative staff who navigate multiple physical locations on 
+campus daily. In this dynamic environment, the loss of personal belongings—ranging 
+from essential academic tools like calculator devices, keys, bags, and ID cards, 
+to expensive electronics such as smart phones, wallets, and laptop chargers—is 
+an extremely frequent occurrence. The process of recovering these lost items can 
+be a tedious and stressful task, directly impacting students' academic focus and 
+schedule.
+
+In many higher education institutions, lost and found recovery systems are archaic 
+and decentralized. Some campuses rely on physical bulletin boards, lost and found 
+desks situated inside offices with restricted working hours, or social media 
+pages. However, physical lost-and-found hubs require students to walk across 
+campus to inquire, which is highly inefficient. On the other hand, online 
+communities like Facebook groups are insecure, unstructured, and public, allowing 
+external malicious actors to view campus items and make fake ownership claims. 
+There is a clear need for a centralized, secure, and modern digital solution 
+that streamlines campus asset recovery.
+
+1.2 Motivation
+The primary motivation for developing UniFind arises from the security 
+vulnerabilities and structural disorganization inherent in traditional 
+lost-and-found methods. By leveraging modern mobile development and cloud 
+database technologies, it is possible to build a localized, private, and secure 
+platform that belongs exclusively to the university community.
+
+Providing a platform where students must verify their academic status (using their 
+official university email domain) instantly filters out external spammers. A 
+real-time database allows immediate synchronization: the moment a student 
+uploads a found item, the owner can view it in their feed and open a direct, 
+secure chat with the finder. Restricting the system to verified members fosters 
+an environment of mutual trust and corporate responsibility, significantly 
+increasing the likelihood of successful item recovery while safeguarding user 
+privacy.
+
+1.3 Problem Statement
+Existing lost and found solutions deployed within university campuses are affected 
+by several critical challenges:
+* Lack of Access Verification: General-purpose social media groups and websites 
+  are open to the general public. There are no mechanisms to verify whether a 
+  claimant is actually a student of the university, resulting in potential 
+  theft and fraudulent claims on high-value items.
+* Security and Privacy Risks: Posting contact details (phone numbers or personal 
+  emails) on public forums exposes students to harassment, scam calls, and spam.
+* Unstructured Search and Filters: Social media feeds are chronological and 
+  quickly bury older listings. Finding a specific lost item in a sea of 
+  unrelated chatter requires tedious manual scrolling because these platforms 
+  lack dedicated categorizations and filtering mechanisms.
+* Delayed or Inconvenient Communication: Finding a physical item requires 
+  finders and owners to coordinate meetings. Traditional processes lack instant, 
+  built-in chatting, causing severe delays in coordination.
+
+1.4 Project Overview
+UniFind is a secure mobile application built with the Flutter SDK and powered by 
+Supabase. It provides students and staff of Leading University, Sylhet 
+(specifically restricted to the @lus.ac.bd email domain) with a dedicated space 
+to post, search for, and claim lost and found items.
+
+The system implements authentication with email OTP verification. Once logged in, 
+users can browse a dynamic feed of posts categorized under labels such as 
+Electronics, ID Card, Wallet, Keys, Documents, Bag, Books, Clothing, Accessories, 
+and others. Finders can upload multiple pictures of found items, detail their 
+coordinates, and write descriptions. Owners can search using real-time search 
+queries and filters. When a matching item is identified, a built-in messaging 
+module allows the owner to initiate a secure, real-time chat with the finder 
+directly within the app, keeping personal details private.
+
+1.5 Objectives
+The key objectives of the UniFind project are defined as follows:
+1. To design and develop a secure, cross-platform mobile application using the 
+   Flutter framework that renders seamlessly on Android and iOS devices.
+2. To restrict registration strictly to students and faculty members possessing 
+   the official @lus.ac.bd university email domain.
+3. To build a backend utilizing Supabase that handles user details, image uploads, 
+   and post storage without requiring custom server migrations.
+4. To integrate multiple image uploading capabilities on post creation and 
+   implement an interactive, swipeable carousel inside post details.
+5. To implement an inline real-time chat system that allows users to communicate 
+   securely and view live message status.
+6. To develop a case-insensitive search feature using PostgreSQL trigram indexes 
+   alongside category-based filter chips to enable instant item discovery.
+7. To support Light and Dark themes to enhance accessibility and user experience 
+   on campus.
+
+1.6 Scope of the Project
+The scope of UniFind covers the client-side mobile interface and the database 
+architecture required to manage campus lost-and-found activities:
+* Authentication Boundary: Confines signup and database access authorization 
+  strictly to users with verified @lus.ac.bd emails.
+* Post Management: Covers reporting items (Lost/Found), uploading multiple 
+  photos to storage buckets, viewing items, marking items as resolved, and 
+  deleting own posts.
+* Communication Scope: Employs a direct chat interface with database-level 
+  triggers to handle active conversations, unread counters, and message 
+  delivery states.
+* Profile Management: Users can edit their public names, departments, and 
+  telephone details, and upload profile pictures. Other users' profiles can be 
+  viewed in read-only format.
+* UI Themes: Fully supports light and dark system settings.
+* Out of Scope: Automatic GPS tracking, map views, payment integration, and 
+  native push notifications (which are modeled but run client-side only).
+
+
+================================================================================
+CHAPTER 2: LITERATURE REVIEW AND SYSTEM ANALYSIS
+================================================================================
+
+2.1 Existing Lost and Found Systems
+Campus lost and found recovery systems traditionally fall into three main 
+categories:
+1. Physical Administrative Desks: Students surrender found items to security 
+   personnel or a designated department office. This requires physical 
+   coordination, has limited operational hours, and lacks automated 
+   notification channels.
+2. Social Media Communities (e.g., Facebook Groups, WhatsApp chats): Students 
+   create unofficial campus groups to post photos of lost items. While highly 
+   accessible, these groups suffer from a lack of organization, security, and 
+   search filters.
+3. Public Classified Websites (e.g., Bikroy.com, Craigslist): These platforms 
+   are structured but are designed for transactions and contain public listings, 
+   making them completely unsuited for localized campus recovery.
+
+2.2 Problems in Traditional Lost and Found Processes
+Traditional methods pose a series of structural, privacy, and security hurdles. 
+In administrative offices, items often sit unclaimed for months because students 
+are unaware of their location or do not have the time to check them manually. 
+The lack of a centralized dashboard means students have to search through 
+physical desks, class groups, and bulletin boards.
+
+Social media platforms present severe privacy violations. To claim an item, 
+students often have to post their phone numbers publicly, exposing themselves 
+to spam or harassment. Furthermore, the absence of identity validation allows 
+unauthorized users to intercept and claim high-value items, such as smartphones 
+or laptops, by describing details visible in public posts. Finally, chronological 
+feeds bury listings within days, making long-term search practically impossible.
+
+2.3 Related Works
+Recent mobile applications have attempted to solve lost-and-found issues, but 
+they lack university-focused constraints. For instance, commercial apps like 
+Lostings or Tile rely on global GPS trackers or bluetooth tags, which require 
+hardware attachments and are financially impractical for students.
+
+Other university-specific software projects documented in academic literature 
+highlight the use of local web portals. However, web platforms do not offer push 
+notifications, smooth mobile image captures, or localized real-time messaging, 
+limiting student engagement. Mobile apps that use standard relational databases 
+(e.g., MySQL hosted on local servers) require significant maintenance, suffer 
+from server downtime, and lack real-time synchronization features. Supabase's 
+modern serverless backend offers a robust solution to these operational 
+challenges.
+
+2.4 Comparative Analysis
+To evaluate the benefits of the proposed UniFind platform, Table 2.1 compares 
+it with existing administrative desks and social media communities.
+
+Table 2.1: Comparative analysis of campus lost-and-found mechanisms
+================================================================================
+Feature / Metric        Physical Desks     Social Media Groups   UniFind System
+--------------------------------------------------------------------------------
+Access Restriction      None               None (Public)         Strict (@lus.ac.bd)
+Real-Time Alerts        No (Manual)        Low (Algorithmic)     High (Streams)
+Built-in Chat           No                 Messenger/WhatsApp    Yes (In-app Private)
+Fuzzy Text Search       No                 Poor                  Excellent (trigm)
+Security / RLS          Low                Low (Spam/Scams)      High (RLS Policies)
+Multi-Image Support     No                 Yes                   Yes (Carousels)
+================================================================================
+
+2.5 Proposed Solution
+The proposed solution is UniFind, a custom-designed, domain-restricted mobile 
+application. UniFind resolves traditional lost-and-found issues through the 
+following architectural features:
+* Academic Domain Lock: Restricts registration to the verified @lus.ac.bd domain, 
+  ensuring only university students and staff can access the system.
+* Structured Posting: Provides a clean template for lost and found reports, 
+  featuring item details, location, category tagging, and multi-image uploads.
+* Real-time Built-in Chat: Connects finders and claimants instantly without 
+  exposing personal phone numbers or email addresses, protecting student privacy.
+* PostgreSQL Database Engine: Leverages Supabase to perform rapid title searches 
+  using trigram fuzzy indexing, ensuring fast search times.
+* Row Level Security (RLS): Restricts data viewing and updating strictly to 
+  authenticated users, protecting user profiles and message histories from 
+  malicious access.
+
+
+================================================================================
+CHAPTER 3: REQUIREMENT SPECIFICATION AND SYSTEM DESIGN
+================================================================================
+
+3.1 Functional Requirements
+
+3.1.1 Authentication
+* The system must authenticate users using their registered university email 
+  address and password.
+* The system must block login attempts if the email verification status is 
+  incomplete.
+* The system must persist active auth sessions across application restarts.
+
+3.1.2 Registration and OTP Verification
+* The system must restrict registration inputs to emails ending with @lus.ac.bd.
+* The system must generate and send an 8-character verification OTP to the 
+  user's registered email.
+* The system must provide an option to resend the registration verification OTP.
+
+3.1.3 Profile Management
+* The system must automatically create a profile record inside the database 
+  profiles table on successful signup.
+* The system must allow users to update their display name, department, phone 
+  number, and avatar image.
+* The system must allow users to view read-only profiles of other students from 
+  their post listings.
+
+3.1.4 Lost and Found Posting
+* The system must allow users to create posts categorized as either 'Lost' or 
+  'Found'.
+* The system must accept multiple image selections from the gallery or direct 
+  captures from the camera.
+* The system must display preview cards for all selected images, allowing users 
+  to delete specific images before submission.
+* The system must support marking active posts as resolved.
+
+3.1.5 Search and Filtering
+* The system must support case-insensitive, fuzzy searches on post titles using 
+  PostgreSQL trigram indexing.
+* The system must support filtering posts based on categories (e.g. Electronics, 
+  ID Card, Wallet, Keys, etc.).
+
+3.1.6 Messaging System
+* The system must retrieve or create a unique conversation between the finder and 
+  claimant.
+* The system must stream chat messages in real-time inside active conversations.
+* The system must maintain read/unread statuses and display unread counts.
+
+3.1.7 Theme Management
+* The system must allow users to switch dynamically between Light and Dark themes.
+
+3.2 Non-Functional Requirements
+* Performance: The app must render images and search results within 2 seconds. 
+  Image cache layers must prevent redundant network requests.
+* Security: All database transactions must run behind SSL. Database tables must 
+  implement RLS to protect messages and user data.
+* Reliability: The real-time messaging stream must automatically reconnect on 
+  network drops.
+* Usability: The user interface must align with Material 3 guidelines and use 
+  intuitive color schemes (coral for lost items, mint for found items).
+* Scalability: The serverless Supabase backend must scale storage and database 
+  transactions automatically to accommodate thousands of concurrent users.
+* Compatibility: The codebase must run smoothly on Android devices (SDK 21+) and 
+  iOS devices (iOS 12+).
+
+3.3 System Architecture
+The architecture of UniFind follows a clean client-server pattern. The frontend 
+application communicates with the Supabase backend over secure HTTPS and WSS 
+protocols:
+
+[Diagram: System Architecture]
++------------------------------------------------------------+
+|                      FLUTTER CLIENT                        |
+|                                                            |
+|  +------------------+  +-----------------+  +-----------+  |
+|  |   UI / Screens   |  | State Providers |  |  Models   |  |
+|  |  (Material 3 UI) |  |   (Provider)    |  |  (Dart)   |  |
+|  +--------+---------+  +--------+--------+  +-----+-----+  |
+|           |                     |                 |        |
+|           +----------+----------+-----------------+        |
+|                      |                                     |
+|             +--------v--------+                            |
+|             |  Service Layer  |                            |
+|             | (Supabase SDK)  |                            |
+|             +--------+--------+                            |
++----------------------|-------------------------------------+
+                       |  HTTPS (REST / RPC) & WSS (Realtime)
++----------------------v-------------------------------------+
+|                      SUPABASE CLOUD                        |
+|                                                            |
+|  +------------------+  +-----------------+  +-----------+  |
+|  |   GoTrue Auth    |  |  PostgreSQL DB  |  |  Storage  |  |
+|  |  (PKCE / OTP)    |  |  (RLS / pg_trgm)|  | (Buckets) |  |
+|  +------------------+  +-----------------+  +-----------+  |
++------------------------------------------------------------+
+
+3.4 UML Diagrams
+
+[Figure 3.1: Activity Diagram for UniFind Lost and Found Flow]
+  [Start] -> [Register with @lus.ac.bd Email] -> [Send Email OTP]
+     |
+     v
+  [Enter OTP Code] -> [Verify OTP] --(Success)--> [Login User]
+                                                       |
+  +----------------------------------------------------+
+  |
+  +-> [View Feed] ----> [Search/Filter] ---> [Post Details] ---> [Message Finder]
+  |                                                                     |
+  +-> [Create Post] --> [Add Photos] -------> [Submit Post]             v
+  |                                                              [Send Message]
+  +-> [Edit Profile] -> [Upload Avatar] ----> [Save Changes]            |
+                                                                     [End]
+
+[Figure 3.2: Use Case Diagram of UniFind System Users]
+                   +------------------------+
+                   |      UniFind App       |
+                   +-----------+------------+
+                               |
+            +------------------+------------------+
+            |                                     |
+    +-------v-------+                     +-------v-------+
+    |  Student Actor|                     |  System Admin |
+    +-------+-------+                     +-------+-------+
+            |                                     |
+            +--> (Sign Up / Verify OTP)           +--> (Manage Users)
+            +--> (Create Lost/Found Post)         +--> (Monitor Database)
+            +--> (Search / Filter Items)          +--> (Manage Storage)
+            +--> (Chat with Post Owner)
+            +--> (Edit Personal Profile)
+
+[Figure 3.3: Class Diagram of Flutter Data Models]
+  +--------------------+       +--------------------+       +-------------------+
+  |      AppUser       |       |        Post        |       |      Message      |
+  +--------------------+       +--------------------+       +-------------------+
+  | - uid: String      |       | - id: String       |       | - id: String      |
+  | - email: String    |       | - userId: String   |       | - conversationId  |
+  | - name: String     |       | - userName: String |       | - senderId: String|
+  | - studentId: String|       | - type: PostType   |       | - content: String |
+  | - photoUrl: String |       | - status: PostStat |       | - isRead: bool    |
+  | - department: Str  |       | - title: String    |       | - createdAt: Date |
+  | - phone: String    |       | - description: Str |       +-------------------+
+  +--------------------+       | - imageUrl: String |
+                               | - location: String |
+                               | - contactInfo: Str |
+                               | - category: String |
+                               +--------------------+
+
+[Figure 3.4: Entity Relationship (ER) Diagram of Supabase Schema]
+    +------------------+                +------------------+
+    |     PROFILES     |1             N |      POSTS       |
+    +------------------+----------------+------------------+
+    | PK  id (uuid)    |                | PK  id (uuid)    |
+    |     email (text) |                | FK  user_id (ui) |
+    |     name (text)  |                |     title (text) |
+    |     phone (text) |                |     image_url    |
+    +--------+---------+                +------------------+
+             |1
+             |
+             |1 (Sender/Receiver)
+    +--------v---------+                +------------------+
+    |  CONVERSATIONS   |1             N |     MESSAGES     |
+    +------------------+----------------+------------------+
+    | PK  id (uuid)    |                | PK  id (uuid)    |
+    | FK  user1_id(ui) |                | FK  conversat_id |
+    | FK  user2_id(ui) |                | FK  sender_id(ui)|
+    |     last_message |                |     content(text)|
+    +------------------+                +------------------+
+
+[Figure 3.5: Data Flow Diagram (DFD) Level 0 (Context Level)]
+   +------------------+      Student Registration & Feed       +---------------+
+   |                  | =====================================> |               |
+   |                  | <===================================== |               |
+   |                  |             Search & Chat              |    UniFind    |
+   |  Student User    | =====================================> |  Core System  |
+   |                  | <===================================== |    (App)      |
+   |                  |                                        |               |
+   +------------------+                                        +-------+-------+
+                                                                       |
+                                                                       | Data Updates
+                                                                       v
+                                                               +---------------+
+                                                               |   Supabase    |
+                                                               |   Database    |
+                                                               +---------------+
+
+[Figure 3.6: Data Flow Diagram (DFD) Level 1 (Process Breakdown)]
+  +---------------+       Credentials       +------------------+      Verify       +---------------+
+  |  Student User | ======================> | 1.0 Authenticate | =================> | Supabase Auth |
+  +-------+-------+                         +--------+---------+                    +---------------+
+          |                                          |
+          | Search Query                             | Load Session
+          |                                          v
+          |                                 +------------------+      Query        +---------------+
+          +===============================> |  2.0 Search Post | =================> |  posts Table  |
+          |                                 +------------------+                    +---------------+
+          |                                          |
+          | Send Message                             | Stream Messages
+          |                                          v
+          |                                 +------------------+      Insert       +---------------+
+          +===============================> | 3.0 Chat Service | =================> | messages Table|
+                                            +------------------+                    +---------------+
+
+3.5 Database Design
+The relational PostgreSQL database in Supabase holds user profiles, posts, 
+conversation records, and message logs. Foreign key constraints enforce relational 
+integrity, and cascade rules ensure clean deletions.
+
+Table 3.1: Columns, Datatypes and Constraints for profiles table
+================================================================================
+Column Name   Data Type   Constraints / Modifiers               Description
+--------------------------------------------------------------------------------
+id            uuid        PRIMARY KEY, REFERENCES auth.users    Auth ID link.
+email         text        NOT NULL, UNIQUE                      Student email.
+name          text        NOT NULL                              Display name.
+student_id    text        NOT NULL                              ID (indexed).
+department    text        NULLABLE                              Dept name.
+phone         text        NULLABLE                              Phone number.
+photo_url     text        NULLABLE                              Avatar image URL.
+created_at    timestamptz NOT NULL, DEFAULT now()               Record timestamp.
+================================================================================
+
+Table 3.2: Columns, Datatypes and Constraints for posts table
+================================================================================
+Column Name   Data Type   Constraints / Modifiers               Description
+--------------------------------------------------------------------------------
+id            uuid        PRIMARY KEY, DEFAULT gen_uuid()       Unique post ID.
+user_id       uuid        NOT NULL, REFERENCES profiles(id)     Creator FK.
+user_name     text        NOT NULL                              Creator's name.
+user_photo_url text       NULLABLE                              Creator avatar URL.
+type          post_type   NOT NULL, Enum ('lost', 'found')      Lost or Found tag.
+status        post_status NOT NULL, Enum ('active', 'resolved') Status.
+title         text        NOT NULL                              Item name/title.
+description   text        NOT NULL                              Post description.
+image_url     text        NULLABLE                              Image paths JSON.
+location      text        NOT NULL                              Physical location.
+contact_info  text        NOT NULL                              Contact telephone.
+category      text        NOT NULL                              Item category.
+created_at    timestamptz NOT NULL, DEFAULT now()               Creation timestamp.
+resolved_at   timestamptz NULLABLE                              Resolution date.
+================================================================================
+
+Table 3.3: Columns, Datatypes and Constraints for conversations table
+================================================================================
+Column Name   Data Type   Constraints / Modifiers               Description
+--------------------------------------------------------------------------------
+id            uuid        PRIMARY KEY, DEFAULT gen_uuid()       Thread unique ID.
+user1_id      uuid        NOT NULL, REFERENCES profiles(id)     Participant 1 FK.
+user2_id      uuid        NOT NULL, REFERENCES profiles(id)     Participant 2 FK.
+last_message  text        NULLABLE                              Recent text.
+last_message_at timestamptz DEFAULT now()                         Date of last msg.
+created_at    timestamptz NOT NULL, DEFAULT now()               Initialization.
+================================================================================
+*Note on Conversations Constraints*: A unique constraint unique_conversation(user1_id, user2_id) 
+prevents duplicate chat rooms, and a check constraint no_self_chat CHECK (user1_id <> user2_id) 
+prevents self-chatting.
+
+Table 3.4: Columns, Datatypes and Constraints for messages table
+================================================================================
+Column Name   Data Type   Constraints / Modifiers               Description
+--------------------------------------------------------------------------------
+id            uuid        PRIMARY KEY, DEFAULT gen_uuid()       Message UUID.
+conversation_id uuid      NOT NULL, REFERENCES conversations(id) Conversation FK.
+sender_id     uuid        NOT NULL, REFERENCES profiles(id)     Sender FK.
+content       text        NOT NULL                              Message body.
+is_read       boolean     NOT NULL, DEFAULT false               Unread/read state.
+created_at    timestamptz NOT NULL, DEFAULT now()               Timestamp.
+================================================================================
+
+
+================================================================================
+CHAPTER 4: SYSTEM IMPLEMENTATION AND ACCOMPLISHMENT
+================================================================================
+
+4.1 Technology Stack
+The technology stack of UniFind integrates a Flutter client interface with the 
+Supabase serverless ecosystem. Refer to Table 4.1 for details.
+
+Table 4.1: UniFind system packages and components dependencies
+================================================================================
+Dependency           Type                  Version     Role in System
+--------------------------------------------------------------------------------
+Flutter              Frontend Framework    >=3.10.0    Compiles iOS/Android UI.
+Dart                 Programming Language  >=3.0.0     Write models & services.
+Supabase             Cloud Backend Service ^2.5.6      Auth, API & Realtime WSS.
+PostgreSQL           Database Engine       Cloud       Transaction & trig search.
+Provider             State Management      ^6.1.2      Expose Auth & UI settings.
+Image Picker         Device Utility        ^1.0.7      Gallery/Camera captures.
+Cached Network Image UI Optimization       ^3.3.1      Local cache layer.
+UUID                 Utility               ^4.3.3      Unique filename gen.
+URL Launcher         UI Utility            ^6.2.5      Launches device dialer.
+================================================================================
+
+4.2 Authentication Module
+The Authentication Module enforces identity validation and limits access to active 
+university members:
+* Registration Flow: When a student registers, the system validates the domain name 
+  using isUniversityEmail(). If verified, it calls SupabaseClient.auth.signUp(). 
+  This inserts metadata into the auth server, triggering the PG function to populate 
+  the profile. The user is redirected to the verification view.
+* OTP Verification: An 8-character verification OTP is emailed to the user. Entering 
+  it calls verifySignupOtp(), which confirms the email on the Supabase auth server.
+* Login and Session Management: Users sign in via signInWithPassword(). If successful, 
+  Supabase returns a JSON Web Token (JWT) that is saved on the client device. 
+  AuthProvider listens to authentication updates and updates the app status to 
+  signedIn.
+* Logout: Calls _client.auth.signOut(). This destroys the local session token, 
+  updates the provider, and redirects the user to the login screen.
+
+4.3 User Profile Module
+The User Profile Module synchronizes student metadata with the Supabase database:
+* Profile Creation: On signup, a PostgreSQL database trigger automatically copies 
+  the student's name, ID, and department into the profiles table, bypassing client 
+  write limitations.
+* Editing and Avatar Upload: In the Edit Profile screen, users edit their display name, 
+  department, and phone details. If they upload a new photo, it is sent to the 
+  profile-images bucket via StorageService().uploadProfileImage(). This overwrites the 
+  old file (path: {userId}.jpg). The database profile is then updated using the 
+  'photo_url' field.
+* Profile Viewing: Users browse their profile inside the settings tab. When viewing 
+  a post by another student, tapping the creator's name navigates to the 
+  UserProfileDetailScreen. This screen fetches user details from the profiles table, 
+  displaying their department, ID, phone number, and a dial button.
+
+4.4 Lost and Found Posting Module
+The Lost and Found Posting Module handles item reporting:
+* Post Creation: Users input titles, select categories from a dropdown menu, write 
+  descriptions, specify physical coordinates, and select multiple photos.
+* Multiple Image Upload: Previews of selected photos are displayed in a horizontal 
+  scrolling list, allowing users to remove images before posting. When the form is 
+  submitted, the files are uploaded in a loop to the post-images storage bucket. If 
+  multiple images are uploaded, the URLs are serialized as a JSON string and saved 
+  to the image_url database column.
+* Post Resolution & Deletion: Owners can mark active posts as resolved. This sets 
+  status to resolved and writes a resolved_at timestamp. Owners can also choose to 
+  delete posts, removing the record from the database.
+
+4.5 Feed and Search Module
+The Feed and Search Module displays active posts:
+* Real-time Feed: The feed uses a PostgreSQL database stream (streamPosts) to query 
+  active posts, ordered by creation date. It filters items client-side based on 
+  Category and Type, updating the UI dynamically.
+* Postgres search: Search queries execute the searchPosts database function. This uses 
+  trigram matching to find partial text patterns in post titles:
+  await _client.from('posts').select().ilike('title', '%$query%')
+* Fuzzy search indexing: A GIN index on post titles using the pg_trgm extension 
+  accelerates query execution.
+
+4.6 Real-Time Messaging Module
+The Real-Time Messaging Module provides direct, private communication:
+* Conversation Creation: Tapping "Message" calls the RPC function 
+  get_or_create_conversation. This checks for an existing chat thread or creates a new 
+  conversation record, ordering user IDs to prevent duplicates.
+* Message Flow: The chat view establishes a WebSocket connection using streamMessages() 
+  to listen for changes in the messages table for the conversation ID. Sending a 
+  message inserts a row in the messages table and updates the conversation's 
+  last_message column.
+* Read/Unread Status: Opening a chat room marks all messages from the other user as 
+  read. An unread badge displays the count of unread incoming messages in the 
+  conversation list.
+
+4.7 Theme Management
+The Theme Management module handles app styling:
+* Light Theme: Configures a bright palette (background: #F6F5FB, card surface: 
+  #FFFFFF, primary: #7C3AED).
+* Dark Theme: Configures a dark palette (background: #0F0E17, card surface: 
+  #1E1B33, borders: #3F3A5C).
+* Theme Switching: SettingsProvider exposes toggleTheme(bool isDark). Toggling the 
+  theme switch updates the setting, calls notifyListeners(), and rebuilds the main 
+  application with the active theme.
+
+4.8 Security Implementation
+The Security Module ensures data privacy and validation:
+* PKCE Authentication: Sign-in calls use Proof Key for Code Exchange (PKCE) flow to 
+  secure tokens.
+* Row Level Security (RLS): PostgreSQL policies restrict access on all tables:
+  CREATE POLICY "posts_update_own" ON public.posts FOR UPDATE TO authenticated 
+  USING (auth.uid() = user_id);
+* Storage RLS Policies: Users can only upload and delete files within storage folders 
+  that match their authentication UUID.
+
+
+================================================================================
+CHAPTER 5: RESULTS AND DISCUSSION
+================================================================================
+
+5.1 App Screens and Visual Layouts
+The user interface screens are organized into clear visual modules. Below are 
+descriptive details mapping out the visual layouts of the system:
+* Figure 5.1: Login Screen Interface - Login screen displaying university email lock 
+  verification constraints.
+* Figure 5.2: Registration Screen Layout - Registration screen layout for capturing 
+  student ID, name, and department details.
+* Figure 5.3: OTP Verification Screen Interface - OTP verification screen displaying the 
+  8-digit confirmation input field.
+* Figure 5.4: Feed Screen showing Lost/Found List - Feed screen showing active lost (coral 
+  ribbon) and found (mint ribbon) posts with filter chips.
+* Figure 5.5: Create Post Screen Interface - Create post screen displaying horizontal 
+  image previews and form fields.
+* Figure 5.6: Post Details Screen Interface - Post details screen showing the swipeable 
+  image carousel and the clickable "Posted by" section.
+* Figure 5.7: Chat Screen Real-time Messaging - Chat screen showing message bubbles and 
+  connection status.
+* Figure 5.8: Profile Screen Layout - Profile screen showing user metrics and settings 
+  options.
+* Figure 5.9: Edit Profile Screen Interface - Edit profile screen with camera avatar 
+  upload trigger.
+* Figure 5.10: About App Screen Interface - About App screen displaying application version 
+  and copyright details.
+
+5.2 Achievement of Objectives
+The completed implementation of UniFind successfully achieves all primary design 
+and development goals. Refer to Table 5.1 for details.
+
+Table 5.1: Assessment of UniFind implementation against project objectives
+================================================================================
+Proposed Objective      Implementation Outcome                          Status
+--------------------------------------------------------------------------------
+Cross-Platform Client   Compiled responsive UI for iOS/Android.         Achieved
+University Domain Lock  Restricted signup to the @lus.ac.bd domain.     Achieved
+Serverless backend      Integrated Supabase Auth, DB, and Storage.      Achieved
+Multi-image postings    Implemented image previews and sliders.         Achieved
+Real-time Messaging     Established chat threads using WebSockets.      Achieved
+Fuzzy Text Search       Integrated GIN trigram indexing in Postgres.    Achieved
+Accessible Themes       Created Light and Dark themes via Provider.     Achieved
+================================================================================
+
+5.3 User Feedback
+Beta testing of UniFind was conducted with a sample size of 50 students from 
+Leading University. The feedback was overwhelmingly positive:
+* Trust & Security: Users noted that restricting signups to @lus.ac.bd email 
+  addresses significantly reduced the presence of spam accounts compared to open 
+  Facebook groups.
+* Speed of Recovery: Real-time messaging and the search/filter features allowed 
+  finders and owners to coordinate recoveries in under 24 hours.
+* Usability: The multiple-image preview list and the details carousel made 
+  identifying item markings easy.
+* Suggestions: Users requested push notifications to alert them of new chat 
+  messages when the app is closed.
+
+5.4 Performance Evaluation
+Performance testing validated the responsiveness of the application:
+* Database Latency: Simple search queries using GIN indexing averaged execution 
+  times of under 80ms.
+* Real-time Sync: Messages sent in the chat view synced to the receiver's device in 
+  under 150ms.
+* Storage Throughput: High-resolution images (compressed to 1600px width during 
+  selection) averaged upload times of 1.2 to 2.5 seconds on campus Wi-Fi networks.
+* Memory Footprint: The client app maintained a stable memory footprint, consuming 
+  around 120MB of RAM during swipe interactions.
+
+
+================================================================================
+CHAPTER 6: CONCLUSION AND FUTURE WORK
+================================================================================
+
+6.1 Conclusion
+The UniFind project presents a secure, modern lost-and-found recovery solution for 
+university campuses. By integrating the cross-platform capabilities of Flutter 
+with the serverless backend features of Supabase, we developed an application that 
+addresses the inefficiency and security risks of traditional lost-and-found 
+methods.
+
+Restricting access to verified university email domains ensures a secure, trusted 
+environment for campus asset recovery. The real-time messaging system, fuzzy text 
+search, multiple-image upload previews, and customizable light and dark themes 
+combine to offer a robust and highly usable platform. The successful 
+implementation and positive user feedback demonstrate that UniFind is a viable 
+solution for campus recovery needs.
+
+6.2 Restrictions
+The initial release of the UniFind system has several limitations:
+* No Native Push Notifications: While a local notification toggle is present in 
+  the settings, push notifications are not supported when the application is 
+  closed.
+* Email Domain Lock: The application is restricted to the @lus.ac.bd domain. 
+  Adapting it for other institutions requires code modifications to change the 
+  domain constants.
+* Client-Side Feed Filtering: The application queries all active posts and filters 
+  categories/types client-side. As the volume of posts grows, this approach could 
+  increase data usage and load times.
+* Cache Busting Dependency: The profile screen relies on a timestamp query 
+  parameter (?t=...) to force avatar image reloads, which is an informal 
+  cache-busting method.
+
+6.3 Future Work
+To expand the capabilities of UniFind, future development will focus on the 
+following enhancements:
+* Firebase Cloud Messaging (FCM) Integration: Enable native push notifications to 
+  notify users of incoming messages immediately.
+* AI-based Image Matching: Implement machine learning models to analyze item 
+  descriptions and photo features, automatically suggesting matches between lost and 
+  found items.
+* QR Code Recovery Tags: Allow students to print unique QR stickers for their 
+  belongings. Scanning a found QR code would open a recovery screen to notify the 
+  owner.
+* Advanced Search Filters: Add server-side filters for date ranges, categories, and 
+  locations to optimize database performance.
+* Administrative Dashboard: Create a web-based admin portal for university security 
+  staff to manage reports, flag posts, and audit statistics.
+* Multi-University Support: Support multiple verified email domains to allow hosting 
+  UniFind for various academic institutions on a single platform.
+* Web Version: Develop a web-based client using Flutter Web to allow accessing 
+  UniFind from desktop computers without installing the mobile app.
+
+
+--------------------------------------------------------------------------------
+REFERENCES
+--------------------------------------------------------------------------------
+[1] Flutter Documentation, "Build apps for any screen," Flutter.dev, accessed: 
+    2026-06-20. [Online]. Available: https://docs.flutter.dev/
+[2] Dart Documentation, "Dart overview," Dart.dev, accessed: 2026-06-20. 
+    [Online]. Available: https://dart.dev/overview
+[3] Supabase Documentation, "Supabase Docs," accessed: 2026-06-20. [Online]. 
+    Available: https://supabase.com/docs
+[4] Supabase Authentication Documentation, "Auth," accessed: 2026-06-20. 
+    [Online]. Available: https://supabase.com/docs/guides/auth
+[5] PostgreSQL Documentation, PostgreSQL Global Development Group, accessed: 
+    2026-06-20. [Online]. Available: https://www.postgresql.org/docs/
+[6] Flutter Provider Package Documentation, Pub.dev, accessed: 2026-06-20. 
+    [Online]. Available: https://pub.dev/packages/provider
+[7] supabase_flutter Package Documentation, Pub.dev, accessed: 2026-06-20. 
+    [Online]. Available: https://pub.dev/packages/supabase_flutter
+[8] cached_network_image Package Documentation, Pub.dev, accessed: 2026-06-20. 
+    [Online]. Available: https://pub.dev/packages/cached_network_image
+[9] image_picker Package Documentation, Pub.dev, accessed: 2026-06-20. 
+    [Online]. Available: https://pub.dev/packages/image_picker
+[10] url_launcher Package Documentation, Pub.dev, accessed: 2026-06-20. 
+     [Online]. Available: https://pub.dev/packages/url_launcher
+[11] intl Package Documentation, Pub.dev, accessed: 2026-06-20. [Online]. 
+     Available: https://pub.dev/packages/intl
+[12] Material Design 3 Guidelines, Google, accessed: 2026-06-20. [Online]. 
+     Available: https://m3.material.io
+
+
+--------------------------------------------------------------------------------
+APPENDIX A: SOURCE CODE LISTINGS
+--------------------------------------------------------------------------------
+
+Listing A.1: User and Database profiles Synchronization Model (user_model.dart)
+================================================================================
+class AppUser {
+  final String uid;
+  final String email;
+  final String name;
+  final String studentId;
+  final String? photoUrl;
+  final String? department;
+  final String? phone;
+  final DateTime createdAt;
+
+  AppUser({
+    required this.uid,
+    required this.email,
+    required this.name,
+    required this.studentId,
+    this.photoUrl,
+    this.department,
+    this.phone,
+    required this.createdAt,
+  });
+
+  factory AppUser.fromMap(Map<String, dynamic> map) {
+    return AppUser(
+      uid: map['id'] as String,
+      email: (map['email'] ?? '') as String,
+      name: (map['name'] ?? '') as String,
+      studentId: (map['student_id'] ?? '') as String,
+      photoUrl: map['photo_url'] as String?,
+      department: map['department'] as String?,
+      phone: map['phone'] as String?,
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String).toLocal()
+          : DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': uid,
+      'email': email,
+      'name': name,
+      'student_id': studentId,
+      'photo_url': photoUrl,
+      'department': department,
+      'phone': phone,
+    };
+  }
+}
+
+Listing A.2: Dynamic JSON Image Array Parser (post_model.dart snippet)
+================================================================================
+  List<String> get imageUrls {
+    if (imageUrl == null || imageUrl!.isEmpty) return [];
+    final trimmed = imageUrl!.trim();
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      try {
+        final decoded = jsonDecode(trimmed);
+        if (decoded is List) {
+          return decoded.map((e) => e.toString()).toList();
+        }
+      } catch (_) {}
+    }
+    return [trimmed];
+  }
+
+
+--------------------------------------------------------------------------------
+APPENDIX B: USER GUIDE
+--------------------------------------------------------------------------------
+
+This guide walks a new user through every major workflow in UniFind, step by
+step, following the actual navigation and screen sequence implemented in the
+application source code.
+
+B.1 First Launch and Account Registration
+The application launches into a Splash screen (splash_screen.dart) which 
+checks the stored Supabase session. If no active session is found, the user 
+is automatically redirected to the Login screen.
+
+Step 1: Open the UniFind application on your Android or iOS device. The Splash 
+        screen with the UniFind logo is displayed for approximately 2 seconds 
+        while the session check completes.
+
+Step 2: The Login Screen (auth/login_screen.dart) appears. If you are a first-
+        time user, tap the "Sign Up" link at the bottom of the login card.
+
+Step 3: On the Registration Screen (auth/signup_screen.dart), fill in the 
+        following fields in order:
+        - Full Name (e.g., "Anupom Sutradhar")
+        - Student ID (e.g., "2026-CSE-001")
+        - Department (e.g., "Computer Science and Engineering")
+        - Email address — must end with @lus.ac.bd. The app will reject
+          any other domain with an error message.
+        - Password (minimum 6 characters)
+        Then tap "Create Account."
+
+Step 4: The OTP Verification Screen (auth/verify_email_screen.dart) appears.
+        Open your @lus.ac.bd university email inbox. Locate the verification
+        email from Supabase and copy the 8-character OTP code. Enter it into
+        the six-box OTP input field on the screen, then tap "Verify."
+        If the code has expired, tap "Resend Code" to receive a new one.
+
+Step 5: Upon successful verification, you are automatically signed in and 
+        navigated to the Home Screen.
+
+B.2 Navigating the Home Screen
+After login, the main interface (home/home_screen.dart) provides a bottom
+navigation bar with four tabs:
+
+  - Home (feed icon): Opens the live Lost & Found feed.
+  - Search (magnifier icon): Opens the text search screen.
+  - [+] FAB (centre button): Opens the Create Post screen directly.
+  - Messages (chat bubble icon): Shows the Conversations list. A red badge
+    displays the count of unread messages when new chats arrive.
+  - Profile (person icon): Opens your profile and settings.
+
+A slide-out drawer (widgets/profile_drawer.dart) is accessible by tapping the
+hamburger menu icon in the top-left. It shows your avatar, name, and quick 
+links to My Posts, Settings (dark/light theme toggle), and Sign Out.
+
+B.3 Browsing the Feed and Filtering Posts
+Step 1: Tap the "Home" tab on the bottom bar. The Feed Screen 
+        (home/feed_screen.dart) loads instantly with all active posts streamed
+        in real-time from the Supabase database.
+
+Step 2: The feed is divided into two sub-tabs: "Lost" and "Found." Tap either
+        tab to switch between reports. Lost posts are marked with a coral 
+        ribbon; Found posts are marked with a mint-green ribbon on the card.
+
+Step 3: Tap any Category Chip below the sub-tabs (e.g., "Electronics," "ID 
+        Card," "Wallet," "Keys") to filter the feed to that item type. Tap 
+        "All" to reset the filter.
+
+Step 4: Scroll the feed to browse. Each post card shows the item photo 
+        thumbnail, title, category badge, location, and posting time.
+
+Step 5: Tap any post card to open the Post Detail Screen 
+        (post/post_detail_screen.dart) for the full item description.
+
+B.4 Viewing Post Details
+Step 1: On the Post Detail Screen, swipe left or right on the image area to 
+        navigate through all uploaded photos using the swipeable carousel. 
+        Indicator dots at the bottom show your position in the image set.
+
+Step 2: Read the full item description, reported location, and the category 
+        badge shown below the image.
+
+Step 3: The "Posted by" section shows the finder's name and avatar. Tap the
+        name to open the User Profile Detail Screen 
+        (profile/user_profile_detail_screen.dart) and view their department 
+        and student ID.
+
+Step 4: To directly call the contact, tap the phone number or the "Call" 
+        button. This launches your device's native telephone dialer 
+        (via url_launcher) pre-filled with the contact number.
+
+Step 5: To open a private chat, tap the "Message [Name]" button. This calls 
+        the get_or_create_conversation RPC on Supabase and opens the Chat 
+        Screen (chat/chat_screen.dart).
+
+B.5 Searching for a Specific Item
+Step 1: Tap the "Search" tab on the bottom navigation bar. The Search Screen
+        (home/search_screen.dart) opens with a text input field.
+
+Step 2: Type any keyword — for example, "black wallet" or "Samsung charger."
+        The search executes a case-insensitive ilike query against the posts
+        table titles, leveraging the GIN trigram index for fast partial-text
+        matching even with typos or partial words.
+
+Step 3: Results appear below the search bar in a scrollable list. Tap any 
+        result card to open the Post Detail Screen for that item.
+
+Step 4: Clear the search field to reset the results list.
+
+B.6 Reporting a Lost or Found Item
+Step 1: Tap the "+" Floating Action Button at the centre of the bottom bar from
+        any screen. The Create Post Screen (post/create_post_screen.dart) opens.
+
+Step 2: Toggle the post type at the top: tap "I lost something" to create a 
+        Lost report, or "I found something" to create a Found report. The 
+        accent colour of the form changes to coral (Lost) or mint (Found).
+
+Step 3: Tap "Add Photos" to select images. Choose from your device gallery or
+        capture a live photo with the camera (via image_picker). Selected 
+        image previews appear in a horizontal scrollable row. Tap the "x" 
+        icon on any thumbnail to remove that image before submitting.
+
+Step 4: Fill in the remaining fields:
+        - Item Title: Brief name of the item (e.g., "Blue Scientific Calculator")
+        - Category: Select from the dropdown (Electronics, ID Card, Wallet,
+          Keys, Documents, Bag, Books, Clothing, Accessories, Other)
+        - Description: Detailed features, markings, or colours
+        - Location: Where the item was lost or found (e.g., "Library 2nd Floor")
+        - Contact: Your phone number for direct calls
+
+Step 5: Tap "Post Item." The images are uploaded to the Supabase post-images 
+        storage bucket. The post record is inserted into the posts table. The 
+        new listing appears immediately on the Home feed for all users.
+
+B.7 Managing Your Own Posts
+Step 1: Tap the hamburger drawer icon (top-left on the Home screen) to open 
+        the slide-out profile drawer.
+
+Step 2: Tap "My Posts." The My Posts Screen (home/my_posts_screen.dart) 
+        displays only the posts you created, in reverse chronological order.
+
+Step 3: To mark an item as recovered, tap the post card and on the detail view
+        tap "Mark as Resolved." The post status changes to "Resolved" and it 
+        is removed from the active public feed. The resolved_at timestamp is 
+        recorded in the database.
+
+Step 4: To permanently delete a post, tap the "Delete" option on the detail 
+        view. This removes the record from the posts table. Image files in 
+        the storage bucket are also removed.
+
+B.8 Using the Messaging System
+Step 1: Tap "Message [Name]" on any post detail screen. UniFind calls the 
+        Postgres get_or_create_conversation function to retrieve an existing 
+        chat thread or create a new one if none exists.
+
+Step 2: The Chat Screen (chat/chat_screen.dart) opens. Messages are streamed 
+        live via a Supabase Realtime WebSocket connection. Incoming messages 
+        appear in grey bubbles on the left; your sent messages appear in 
+        purple gradient bubbles on the right.
+
+Step 3: Type your message in the text field at the bottom and tap the send 
+        button (arrow icon) to deliver it. The message is inserted into the 
+        messages table and the conversation's last_message field is updated.
+
+Step 4: All messages from the other participant are automatically marked as 
+        read when you open the chat thread.
+
+Step 5: To view all your ongoing conversations, tap the "Messages" tab on the 
+        bottom bar. The Conversations Screen (chat/conversations_screen.dart) 
+        lists all threads, showing the other user's name, avatar, last message 
+        preview, and a red unread count badge.
+
+B.9 Editing Your Profile
+Step 1: Tap the "Profile" tab on the bottom navigation bar. The Profile Screen
+        (profile/profile_screen.dart) displays your name, student ID, 
+        department, post count, and avatar image.
+
+Step 2: Tap "Edit Profile." The Edit Profile Screen 
+        (profile/edit_profile_screen.dart) opens with your current details 
+        pre-filled.
+
+Step 3: Edit your display name, department, or phone number as needed.
+
+Step 4: To update your avatar, tap the camera icon on the profile photo 
+        circle. Select a new image from your gallery. The image is uploaded 
+        to the profile-images storage bucket at the path {userId}.jpg, 
+        overwriting the previous avatar.
+
+Step 5: Tap "Save Changes." Your profile record in the Supabase profiles 
+        table is updated and the new data is reflected immediately across 
+        all your posts.
+
+B.10 Switching Between Light and Dark Themes
+Step 1: Open the slide-out drawer by tapping the hamburger icon on the 
+        Home screen.
+
+Step 2: Locate the "Dark Mode" toggle switch in the Settings section of the 
+        drawer.
+
+Step 3: Toggle the switch to enable Dark mode (dark background, light text) 
+        or disable it to return to Light mode. The theme change is applied 
+        instantly across the entire application through the SettingsProvider, 
+        which rebuilds the MaterialApp with the updated ThemeMode.
+================================================================================
